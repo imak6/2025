@@ -1,0 +1,893 @@
+Image Filename,Predicted Class
+25,cat - sphinx
+65,dog - rottweiler
+33,dog - scotch terrier
+89,dog - rottweiler
+10,dog - vizsla
+88,dog - chihuahua
+12,cat - siamese
+75,cat - persian
+34,cat - ragdoll
+11,cat - ragdoll
+91,cat - sphinx
+14,cat - egyptian mau
+10,dog - pug
+71,dog - groenendael
+40,cat - american shorthair
+75,cat - ragdoll
+5,cat - egyptian mau
+100,cat - scottishfold
+9,dog - shar pei
+17,cat - persian
+4,dog - bernese mountain
+64,cat - maine coon
+30,cat - ragdoll
+53,cat - ragdoll
+16,dog - dingo
+98,cat - maine coon
+6,cat - bengal
+26,cat - bengal
+7,dog - scotch terrier
+46,cat - british shorthair
+65,dog - african wild dog
+23,dog - japanese spaniel
+11,dog - bull mastiff
+17,dog - pit bull
+54,dog - rhodesian
+67,cat - sphinx
+89,cat - ragdoll
+9,dog - chow
+63,cat - russian blue
+52,dog - blenheim
+53,dog - shih-tzu
+26,cat - sphinx
+24,cat - british shorthair
+48,cat - scottishfold
+7,dog - dhole
+74,cat - egyptian mau
+7,cat - birman
+88,dog - bull mastiff
+100,cat - abyssinian
+3,dog - rottweiler
+58,cat - bengal
+29,dog - bluetick
+10,cat - ragdoll
+33,cat - bombay
+102,cat - birman
+88,dog - rottweiler
+70,dog - chihuahua
+90,dog - beagle
+75,cat - ragdoll
+52,dog - afghan
+24,cat - maine coon
+47,cat - birman
+4,cat - scottishfold
+52,cat - bengal
+6,dog - chihuahua
+45,dog - irish spaniel
+11,cat - persian
+39,cat - bengal
+73,cat - bengal
+77,cat - bengal
+98,cat - persian
+35,dog - shih-tzu
+59,dog - german-dog - sheperd
+10,cat - ragdoll
+14,dog - german sheperd
+60,cat - scottishfold
+39,cat - american shorthair
+34,cat - scottishfold
+38,cat - siamese
+3,cat - scottishfold
+14,dog - coated-dog - flat-dog - retriever
+1,cat - bengal
+10,dog - cockapoo
+38,cat - siamese
+41,cat - abyssinian
+35,dog - vizsla
+2,dog - bull terrier
+2,dog - pomeranian
+37,cat - ragdoll
+50,cat - bombay
+44,dog - beagle
+6,cat - american shorthair
+36,cat - ragdoll
+87,cat - ragdoll
+1,dog - yorkie
+103,dog - african wild dog
+21,cat - persian
+61,dog - shih-tzu
+4,cat - birman
+70,dog - border-dog - collie
+70,dog - mex hairless
+96,dog - bluetick
+76,cat - ragdoll
+26,dog - bull mastiff
+31,cat - bombay
+16,cat - ragdoll
+1,cat - bombay
+75,cat - bengal
+38,dog - komondor
+5,dog - shih-tzu
+24,dog - bluetick
+20,dog - shar pei
+2,cat - bengal
+91,cat - russian blue
+92,cat - ragdoll
+24,dog - american spaniel
+2,dog - dingo
+67,dog - greyhound
+45,cat - maine coon
+7,cat - american shorthair
+90,dog - malinois
+67,cat - american shorthair
+33,cat - mainecoon
+23,cat - russian blue
+5,dog - beagle
+103,cat - scottishfold
+1,cat - russian blue
+2,cat - abyssinian
+33,dog - vizsla
+34,cat - egyptian mau
+26,cat - american shorthair
+53,cat - ragdoll
+2,dog - irish wolfhound
+95,cat - ragdoll
+33,cat - bombay
+98,cat - egyptian mau
+1,cat - bengal
+56,cat - bombay
+31,cat - bombay
+91,cat - maine coon
+45,cat - ragdoll
+31,cat - british shorthair
+15,dog - basenji
+41,dog - labrador
+10,dog - bloodhound
+2,cat - bengal
+39,dog - komondor
+5,cat - scottishfold
+90,cat - bengal
+5,cat - ragdoll
+37,dog - shih-tzu
+54,cat - persian
+85,cat - ragdoll
+8,cat - maine coon
+80,cat - mainecoon
+57,dog - scotch terrier
+9,dog - dachshund
+89,cat - abyssinian
+68,dog - doberman
+0,dog - pug
+78,dog - japanese spaniel
+11,dog - german sheperd
+99,cat - siamese
+101,dog - borzoi
+60,dog - aspin
+55,dog - scotch terrier
+6,cat - ragdoll
+3,cat - british shorthair
+20,dog - shih-tzu
+78,cat - bengal
+16,dog - pug
+82,cat - abyssinian
+11,dog - bulldog
+32,cat - ragdoll
+51,dog - dhole
+66,dog - borzoi
+8,dog - doberman
+53,cat - american shorthair
+45,cat - maine coon
+76,dog - basenji
+16,dog - basenji
+103,cat - sphinx
+20,dog - komondor
+4,cat - ragdoll
+32,cat - ragdoll
+7,dog - bloodhound
+101,cat - birman
+97,dog - golden retriever
+88,cat - ragdoll
+24,cat - bengal
+8,dog - doberman
+48,cat - persian
+11,cat - british shorthair
+56,cat - bengal
+24,dog - bichon frise
+80,cat - bengal
+36,dog - shih-tzu
+8,dog - vizsla
+93,cat - ragdoll
+11,cat - egyptian mau
+23,cat - bombay
+8,cat - abyssinian
+14,cat - ragdoll
+90,cat - siamese
+86,cat - bombay
+77,dog - border-dog - collie
+89,cat - maine coon
+32,dog - american hairless
+47,cat - ragdoll
+87,dog - boxer
+13,dog - bulldog
+13,cat - ragdoll
+10,dog - doberman
+61,dog - golden retriever
+40,dog - borzoi
+6,cat - sphynx
+91,dog - scotch terrier
+14,cat - bengal
+96,dog - coated-dog - flat-dog - retriever
+15,cat - bombay
+8,cat - siamese
+63,dog - pug
+73,dog - havanese
+59,cat - bengal
+17,dog - doberman
+27,dog - groenendael
+81,cat - bombay
+89,cat - ragdoll
+90,cat - mainecoon
+65,dog - pit bull
+94,cat - birman
+72,dog - bull terrier
+9,cat - ragdoll
+53,cat - bombay
+68,cat - maine coon
+59,dog - chihuahua
+37,dog - german-dog - sheperd
+41,cat - persian
+88,dog - doberman
+13,cat - ragdoll
+8,cat - abyssinian
+40,dog - bulldog
+11,cat - siamese
+56,dog - border collie
+89,cat - bengal
+13,cat - bengal
+90,cat - siamese
+53,dog - cocker
+10,dog - doberman
+56,cat - persian
+4,cat - ragdoll
+88,dog - blenheim
+47,cat - ragdoll
+59,dog - clumber
+15,dog - blenheim
+87,cat - birman
+35,cat - persian
+5,dog - american spaniel
+43,dog - bull terrier
+59,dog - malinois
+5,cat - sphinx
+83,dog - cocker
+57,cat - ragdoll
+10,cat - ragdoll
+4,cat - birman
+87,dog - rottweiler
+65,cat - persian
+61,cat - bengal
+15,cat - persian
+7,cat - ragdoll
+93,cat - sphynx
+6,cat - sphynx
+73,dog - golden-dog - retriever
+91,cat - british shorthair
+6,dog - bluetick
+101,cat - ragdoll
+13,dog - pug
+24,cat - bombay
+63,cat - bengal
+10,cat - ragdoll
+52,dog - doberman
+82,dog - german sheperd
+94,cat - persian
+69,dog - rottweiler
+64,cat - abyssinian
+36,cat - birman
+57,dog - french bulldog
+95,dog - pug
+7,cat - ragdoll
+41,dog - golden retriever
+7,cat - bengal
+13,cat - abyssinian
+88,cat - birman
+87,cat - ragdoll
+43,dog - shih-dog - tzu
+58,cat - ragdoll
+58,dog - sheepdog-dog - shetland
+60,cat - persian
+49,cat - maine coon
+26,cat - ragdoll
+2,dog - bluetick
+32,dog - shiba inu
+78,cat - sphinx
+1,cat - british shorthair
+59,cat - ragdoll
+94,dog - dingo
+85,dog - doberman-dog - pinscher
+100,dog - blenheim
+45,cat - ragdoll
+40,cat - bengal
+70,cat - abyssinian
+66,dog - akita
+67,cat - birman
+1,dog - bichon frise
+34,cat - ragdoll
+55,dog - boxer
+6,cat - british shorthair
+70,cat - sphinx
+53,cat - persian
+49,dog - dingo
+25,cat - maine coon
+46,dog - bulldog
+14,cat - sphinx
+15,cat - abyssinian
+25,dog - dalmatian
+70,dog - border collie
+24,cat - siamese
+24,dog - japanese spaniel
+7,dog - japanese spaniel
+32,dog - bluetick
+77,dog - greyhound
+46,dog - boxer
+47,dog - rhodesian
+3,cat - scottishfold
+69,cat - birman
+52,cat - russian blue
+69,cat - ragdoll
+25,cat - bengal
+9,cat - abyssinian
+15,cat - sphynx
+53,dog - blenheim
+2,dog - chow
+86,dog - schnauzer
+3,dog - borzoi
+87,cat - ragdoll
+18,cat - ragdoll
+5,cat - scottishfold
+103,cat - birman
+81,dog - scotch terrier
+2,dog - afghan
+4,dog - german-dog - sheperd
+69,dog - chow
+87,cat - abyssinian
+10,cat - ragdoll
+25,dog - vizsla
+75,dog - bluetick
+45,cat - abyssinian
+31,dog - bull terrier
+0,cat - siamese
+69,dog - vizsla
+70,cat - russian blue
+93,dog - blenheim
+14,cat - maine coon
+1,cat - maine coon
+28,cat - sphynx
+10,cat - bengal
+66,cat - persian
+45,dog - shih-tzu
+1,cat - mainecoon
+55,cat - russian blue
+60,dog - komondor
+16,dog - boston terrier
+66,cat - ragdoll
+80,dog - maltese
+73,cat - sphynx
+42,dog - doberman
+59,cat - ragdoll
+12,cat - maine coon
+45,dog - bichon frise
+90,cat - abyssinian
+69,cat - ragdoll
+13,cat - sphynx
+67,cat - ragdoll
+6,dog - corgi
+4,dog - doberman
+7,cat - maine coon
+16,cat - russian blue
+57,cat - ragdoll
+69,dog - shiba inu
+69,dog - collie
+2,dog - pit bull
+10,cat - bengal
+36,cat - abyssinian
+80,dog - boxer
+2,cat - persian
+76,cat - british shorthair
+31,cat - sphinx
+24,dog - beagle
+103,cat - bombay
+36,dog - beagle
+46,dog - clumber
+37,cat - russian blue
+91,cat - american shorthair
+0,dog - vizsla
+3,cat - ragdoll
+82,cat - birman
+43,dog - blenheim
+93,cat - ragdoll
+1,cat - american shorthair
+83,cat - bengal
+87,cat - british shorthair
+9,dog - pug
+0,dog - greyhound
+94,cat - ragdoll
+67,dog - dhole
+7,cat - birman
+14,cat - british shorthair
+54,cat - ragdoll
+10,cat - birman
+19,dog - bluetick
+11,cat - american shorthair
+57,cat - ragdoll
+84,cat - persian
+87,cat - birman
+32,dog - pit bull
+17,cat - abyssinian
+16,cat - russian blue
+10,dog - great dane
+87,cat - bengal
+92,cat - ragdoll
+68,dog - doberman
+14,cat - ragdoll
+8,dog - basenji
+56,dog - japanese spaniel
+32,cat - ragdoll
+43,cat - abyssinian
+7,cat - abyssinian
+10,dog - great dane
+10,dog - boston terrier
+15,cat - abyssinian
+24,dog - cockapoo
+33,dog - dingo
+67,cat - ragdoll
+94,cat - abyssinian
+68,cat - sphynx
+13,dog - lhasa
+45,cat - abyssinian
+38,dog - german-dog - sheperd
+39,dog - irish wolfhound
+52,cat - scottishfold
+51,cat - persian
+59,cat - ragdoll
+71,cat - bengal
+59,cat - abyssinian
+3,cat - persian
+33,dog - rottweiler
+3,dog - blenheim
+95,dog - bichon frise
+102,cat - ragdoll
+90,dog - shih-tzu
+63,cat - sphynx
+47,dog - bull terrier
+59,dog - sheepdog-dog - shetland
+95,dog - coated-dog - flat-dog - retriever
+45,cat - abyssinian
+23,cat - maine coon
+56,cat - sphynx
+95,cat - bombay
+25,cat - persian
+20,cat - bombay
+26,cat - maine coon
+100,cat - scottishfold
+57,dog - borzoi
+56,dog - doberman
+4,dog - aspin
+74,cat - ragdoll
+59,dog - basenji
+12,cat - bengal
+0,cat - russian blue
+45,dog - doberman
+72,cat - american shorthair
+41,cat - bombay
+55,cat - siamese
+92,dog - bluetick
+23,cat - british shorthair
+16,dog - boxer
+41,cat - bengal
+7,cat - ragdoll
+1,cat - mainecoon
+11,cat - bengal
+45,dog - bulldog
+85,dog - bulldog
+14,dog - greyhound
+38,cat - persian
+8,dog - corgi
+59,cat - abyssinian
+10,cat - mainecoon
+99,dog - doberman-dog - pinscher
+6,cat - birman
+2,cat - bengal
+77,dog - golden retriever
+12,cat - sphinx
+9,dog - rottweiler
+13,cat - persian
+49,dog - german sheperd
+11,cat - egyptian mau
+83,dog - clumber
+14,dog - boxer
+82,cat - birman
+70,cat - abyssinian
+88,dog - american spaniel
+7,cat - birman
+2,dog - bulldog
+10,cat - bengal
+50,cat - persian
+1,dog - rhodesian
+62,cat - birman
+46,cat - bengal
+18,cat - bengal
+26,cat - abyssinian
+23,dog - coated-dog - flat-dog - retriever
+24,dog - boxer
+103,dog - american hairless
+3,dog - rhodesian
+10,cat - persian
+1,cat - persian
+52,cat - mainecoon
+15,cat - bombay
+61,dog - scotch terrier
+73,cat - american shorthair
+90,dog - chihuahua
+2,dog - malinois
+14,cat - abyssinian
+9,dog - lhasa
+65,dog - coated-dog - flat-dog - retriever
+25,dog - japanese spaniel
+50,cat - sphinx
+6,cat - sphynx
+41,dog - groenendael
+52,cat - persian
+41,cat - egyptian mau
+7,cat - maine coon
+10,cat - bombay
+12,dog - dalmatian
+87,cat - scottishfold
+50,cat - bengal
+89,cat - sphynx
+67,cat - persian
+14,cat - ragdoll
+6,dog - groenendael
+50,cat - ragdoll
+58,cat - bombay
+59,dog - cairn
+10,dog - german sheperd
+75,cat - birman
+94,cat - persian
+43,dog - german-dog - sheperd
+91,dog - japanese spaniel
+24,cat - bombay
+1,dog - rottweiler
+100,dog - pit bull
+2,dog - maltese
+18,dog - chow
+101,cat - bengal
+6,cat - persian
+88,cat - british shorthair
+3,cat - maine coon
+47,cat - birman
+88,dog - bluetick
+19,cat - ragdoll
+24,cat - egyptian mau
+10,dog - beagle
+67,cat - british shorthair
+50,cat - bengal
+83,dog - bichon frise
+35,dog - great dane
+31,dog - bulldog
+38,cat - ragdoll
+100,cat - birman
+40,dog - cairn
+83,dog - basenji
+74,cat - british shorthair
+25,dog - corgi
+1,cat - sphinx
+59,dog - golden retriever
+100,cat - ragdoll
+6,dog - yorkie
+57,dog - bull terrier
+92,dog - bulldog
+15,cat - bengal
+6,cat - british shorthair
+49,dog - rottweiler
+10,dog - pomeranian
+70,cat - ragdoll
+20,dog - shar pei
+103,dog - dingo
+8,dog - shiba inu
+63,cat - persian
+87,dog - aspin
+4,cat - sphynx
+47,cat - ragdoll
+10,cat - bombay
+89,cat - british shorthair
+56,dog - bluetick
+25,dog - rhodesian
+34,cat - persian
+103,dog - malinois
+10,cat - ragdoll
+42,cat - ragdoll
+27,dog - bichon frise
+37,cat - scottishfold
+79,cat - bengal
+53,dog - dalmatian
+25,cat - bengal
+80,cat - ragdoll
+68,cat - sphinx
+7,cat - bengal
+25,dog - dalmatian
+96,dog - chow
+44,cat - sphynx
+95,dog - american spaniel
+39,cat - persian
+45,cat - bengal
+51,dog - doberman
+94,dog - shih-tzu
+10,dog - golden-dog - retriever
+2,cat - ragdoll
+11,cat - egyptian mau
+42,cat - ragdoll
+60,cat - ragdoll
+20,dog - doberman
+17,cat - british shorthair
+48,cat - maine coon
+5,dog - rottweiler
+1,dog - japanese spaniel
+15,cat - birman
+62,cat - maine coon
+46,cat - british shorthair
+52,dog - golden retriever
+101,dog - bull terrier
+69,dog - rottweiler
+59,cat - american shorthair
+92,cat - mainecoon
+36,cat - ragdoll
+20,dog - pug
+65,dog - german-dog - sheperd
+23,dog - husky-dog - siberian
+78,cat - ragdoll
+2,cat - abyssinian
+15,cat - birman
+10,cat - ragdoll
+68,dog - bulldog
+74,dog - beagle
+69,dog - scotch terrier
+38,dog - clumber
+39,dog - german sheperd
+41,dog - chow
+87,dog - shiba inu
+2,dog - pug
+9,cat - maine coon
+80,cat - ragdoll
+43,dog - vizsla
+7,dog - cockapoo
+49,cat - british shorthair
+103,cat - abyssinian
+87,cat - ragdoll
+46,dog - boxer
+27,cat - russian blue
+45,cat - siamese
+7,cat - scottishfold
+82,dog - labrador
+3,cat - ragdoll
+11,cat - sphinx
+61,dog - komondor
+58,cat - russian blue
+58,dog - labrador-dog - retriever
+56,cat - persian
+76,cat - bengal
+60,cat - mainecoon
+9,cat - bengal
+12,dog - pug
+8,cat - birman
+54,dog - doberman
+11,dog - malinois
+92,cat - maine coon
+51,cat - persian
+94,dog - chihuahua
+76,dog - doberman
+21,cat - ragdoll
+10,cat - persian
+43,cat - bengal
+81,cat - bengal
+20,dog - beagle
+10,cat - birman
+89,cat - british shorthair
+43,dog - mex hairless
+100,dog - doberman
+25,cat - american shorthair
+44,cat - sphynx
+10,dog - cairn
+65,dog - irish wolfhound
+100,cat - bengal
+97,cat - persian
+34,cat - ragdoll
+51,cat - birman
+102,dog - cocker
+33,cat - bengal
+50,cat - persian
+19,cat - persian
+53,cat - maine coon
+7,cat - abyssinian
+0,dog - rhodesian
+45,cat - egyptian mau
+87,dog - great dane
+69,dog - boxer
+10,cat - abyssinian
+12,dog - basset
+18,cat - birman
+43,dog - groenendael
+10,cat - bengal
+0,dog - doberman
+20,cat - bombay
+45,cat - russian blue
+0,cat - ragdoll
+103,dog - dhole
+103,cat - siamese
+101,cat - russian blue
+41,dog - boxer
+92,cat - persian
+11,dog - cocker
+95,cat - siamese
+10,dog - basenji
+94,dog - boston terrier
+53,dog - border-dog - collie
+53,dog - rottweiler
+11,cat - sphynx
+54,dog - doberman
+8,cat - persian
+67,cat - bombay
+48,cat - british shorthair
+1,cat - ragdoll
+14,dog - blenheim
+59,cat - abyssinian
+83,dog - cocker
+7,cat - ragdoll
+21,dog - french bulldog
+24,cat - ragdoll
+18,cat - american shorthair
+63,dog - blenheim
+31,cat - abyssinian
+49,cat - abyssinian
+2,cat - bombay
+82,cat - bengal
+12,cat - russian blue
+27,dog - irish wolfhound
+0,cat - birman
+7,dog - bull terrier
+18,dog - rottweiler
+73,dog - rhodesian
+70,dog - rottweiler
+101,dog - cocker
+3,cat - ragdoll
+17,cat - bombay
+67,dog - bluetick
+91,dog - shih-tzu
+85,cat - scottishfold
+0,dog - shih-tzu
+3,cat - russian blue
+102,dog - rottweiler
+5,dog - rottweiler
+10,cat - ragdoll
+100,dog - rottweiler
+65,cat - russian blue
+74,cat - ragdoll
+1,dog - corgi
+92,dog - clumber
+22,dog - boston terrier
+26,cat - ragdoll
+6,dog - rottweiler
+7,dog - vizsla
+10,dog - irish spaniel
+47,cat - ragdoll
+3,dog - blenheim
+63,dog - borzoi
+27,cat - bengal
+7,dog - cocker
+100,dog - bluetick
+38,cat - bengal
+9,cat - maine coon
+10,cat - maine coon
+56,dog - bluetick
+101,dog - corgi
+14,cat - sphynx
+66,cat - abyssinian
+98,dog - corgi
+36,dog - boston terrier
+72,dog - chow
+8,dog - shiba inu
+92,cat - egyptian mau
+26,dog - doberman-dog - pinscher
+4,cat - persian
+71,cat - egyptian mau
+16,dog - pit bull
+4,cat - abyssinian
+75,cat - ragdoll
+103,cat - british shorthair
+52,dog - bloodhound
+1,cat - ragdoll
+15,cat - bengal
+89,dog - bluetick
+78,dog - chow
+68,cat - persian
+74,cat - maine coon
+82,cat - persian
+43,dog - french bulldog
+2,cat - sphinx
+2,cat - bengal
+91,dog - maltese
+1,cat - siamese
+12,cat - persian
+23,cat - sphynx
+3,cat - british shorthair
+76,dog - bluetick
+53,cat - egyptian mau
+48,dog - basenji
+94,cat - bombay
+98,cat - ragdoll
+80,cat - siamese
+32,dog - rottweiler
+80,dog - doberman
+15,cat - abyssinian
+98,dog - saint bernard
+10,cat - ragdoll
+15,cat - sphynx
+12,dog - vizsla
+80,dog - labrador
+77,dog - komondor
+65,cat - bengal
+8,dog - german sheperd
+96,cat - sphynx
+63,cat - birman
+4,dog - blenheim
+74,cat - bengal
+18,cat - maine coon
+8,dog - pomeranian
+95,cat - bengal
+13,cat - abyssinian
+103,cat - maine coon
+99,dog - blenheim
+90,dog - cairn
+12,dog - labrador-dog - retriever
+0,dog - malinois
+92,dog - cocker
+18,cat - bombay
+5,dog - mex hairless
+65,dog - dalmatian
+5,dog - rottweiler
+30,cat - ragdoll
+62,cat - persian
+45,cat - persian
+48,cat - british shorthair
+58,dog - bulldong-dog - french
+12,cat - bengal
+45,dog - bernese mountain
+88,dog - shiba inu
+25,cat - american shorthair
+22,cat - ragdoll
+11,dog - doberman
+96,cat - maine coon
+29,cat - ragdoll
+95,cat - persian
+36,cat - persian
+2,dog - groenendael
+10,dog - vizsla
+89,cat - bombay
+6,cat - birman
+75,dog - basset
+0,dog - blenheim
+3,cat - mainecoon
+32,cat - maine coon
+61,dog - cocker
+22,dog - bull terrier
+18,dog - bloodhound
+85,cat - american shorthair
+90,cat - ragdoll
+10,cat - sphynx
+3,cat - maine coon
+101,dog - poodle
+23,cat - ragdoll
+15,dog - african wild dog
+25,dog - bluetick
+10,dog - greyhound
