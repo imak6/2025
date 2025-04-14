@@ -1,4 +1,4 @@
-# Implementatino of attention mechanism in LSTMs for stock prediction
+# Implementation of LSTMs with Attention mechanism for stock prediction
 
 - Install necessary libraries listed in
   **requirements.txt** file using **pip install**
@@ -6,31 +6,47 @@
   define the constants which are later used in the code and setup logging.
 - I have written a utility function named
   **flatten_multiindex_columns()** whose objective is to flatten the columns with multiple indices.
-- #Here is a sample dataframe with 5 columns:
+- Here is a sample dataframe with 5 columns:
 
       Column          Non-Null Count  Dtype
 
----  ------          --------------  -----
- 0   (Close, AAPL)   63 non-null     float64
- 1   (High, AAPL)    63 non-null     float64
- 2   (Low, AAPL)     63 non-null     float64
- 3   (Open, AAPL)    63 non-null     float64
- 4   (Volume, AAPL)  63 non-null     int64
+---  ------          --------------   -----
+ 0    (Close, AAPL)   63 non-null     float64
 
-- I have bnow created a class named
+ 1    (High, AAPL)    63 non-null     float64
+
+ 2    (Low, AAPL)     63 non-null     float64
+
+ 3    (Open, AAPL)    63 non-null     float64
+
+ 4    (Volume, AAPL)  63 non-null     int64
+
+- I have now created a class named
   **"StockDataHandler"** that handles fetching, preprocessing and sequencing the stock data using the functions:
 
   **load_data()** - downloads the stock data from yahoo finance.
+
   **preprocess_data()** - preprocesses the data by scaling, sequencing and handling missing values.
+
   **scale_data()** - scales the data using MinMaxScaler().
-  **create_sequences()** - creates sequences of data for LSTM input.**get_last_sequence()** - gets the last sequence for prediction. **get_original_data()** - returns the original data.
+
+  **create_sequences()** - creates sequences of data for LSTM input.
+
+  **get_last_sequence()** - gets the last sequence for prediction.
+
+  **get_original_data()** - returns the original data.
+
   **get_scaler()** - returns the scaler object.
 
 - I have also written
   **LSTMAttentionModel** class that builds, trains, and uses the LSTM with Attention mechanism. Here are the functions in this class that deal with specific task:
+
   **build_model()** - builds the Keras Functional API model.
+
   **train()** - trains the model on the data downloaded from yahoo finance.
+
   **evaluate()** - evaluates the model on test data.
+
   **predict_future()** - predicts future stock prices iteratively for the next 4 days.
 
 - **StockVisualizer** is another class

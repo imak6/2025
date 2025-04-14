@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 import keras
 import yfinance as yf
@@ -19,14 +20,14 @@ TICKER = 'AAPL'
 START_DATE = '2022-01-01'
 # Using current date (approx) as end_date to get most recent data for prediction
 # Note: yfinance `end` is exclusive for daily data
-# Let's set end_date a bit into the future to ensure we get today's data if available
+# Set end_date a bit into the future to ensure we get today's data if available
 TODAY = pd.Timestamp.now().strftime('%Y-%m-%d')
 END_DATE = (pd.Timestamp.now() + pd.Timedelta(days=1)).strftime('%Y-%m-%d') # Ensures we get up to 'today'
 SEQUENCE_LENGTH = 60
 PREDICTION_DAYS = 4
 TRAIN_SPLIT_RATIO = 0.8
 EPOCHS = 50 # Reduced epochs for faster example, increase as needed (original was 200)
-BATCH_SIZE = 64 # Adjusted batch size
+BATCH_SIZE = 256 # Adjusted batch size
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -193,7 +194,7 @@ class LSTMAttentionModel:
         attention_layer = AdditiveAttention(name='attention_weight')
         attention_result = attention_layer([lstm_out2, lstm_out2])
         multiply_layer = Multiply()([lstm_out2, attention_result])
-        context_vector = Flatten()(multiply_layer) # Using Flatten based on original code
+        context_vector = Flatten()(multiply_layer)
 
         dense_out = Dropout(0.2)(context_vector)
         dense_out = BatchNormalization()(dense_out)
@@ -215,7 +216,7 @@ class LSTMAttentionModel:
         if X_train.ndim == 2:
              X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
 
-        early_stopping = EarlyStopping(monitor='val_loss', patience=15, verbose=1, mode='min', restore_best_weights=True) # Increased patience slightly
+        early_stopping = EarlyStopping(monitor='val_loss', patience=15, verbose=1, mode='min', restore_best_weights=True)
 
         self.history = self.model.fit(
             X_train, y_train,
@@ -284,8 +285,14 @@ class StockVisualizer:
     def __init__(self, ticker):
         self.ticker = ticker
 
-    def plot_candlestick_with_predictions(self, history_data, predictions_df, window_size=120):
-        """Plots candlestick chart with future predictions using mplfinance."""
+    def plot_candlestick_with_predictions(self, history_data, predictions_df, window_size=120, save_path=None):
+        """Plots candlestick chart with future predictions using mplfinance.
+        Args:
+            history_data (pd.DataFrame): DataFrame with historical OHLCV data.
+            predictions_df (pd.DataFrame): DataFrame with 'Predicted Price' and dates.
+            window_size (int): Number of historical days to plot.
+            save_path (str, optional): Full path to save the plot image (e.g., 'plot.png'). Defaults to None.
+        """
         if history_data is None or predictions_df is None:
             logging.error("Cannot plot candlestick: Missing history or prediction data.")
             return
@@ -306,6 +313,18 @@ class StockVisualizer:
             logging.error("No valid data left for candlestick plot after cleaning.")
             return
 
+        # Prepare savefig arguments for mplfinance if save_path is provided
+        savefig_args = None
+        if save_path:
+            # Ensure the directory exists (creates if not present)
+            save_dir = os.path.dirname(save_path)
+            if save_dir and not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+                logging.info(f"Created directory for plot save: {save_dir}")
+
+            savefig_args = dict(fname=save_path, dpi=300, pad_inches=0.25)
+            logging.info(f"Plot will be saved to: {save_path}")
+
         try:
             fig, ax = mpf.plot(
                 plot_data.iloc[-window_size:], # Plot last 'window_size' days
@@ -315,7 +334,8 @@ class StockVisualizer:
                 title=f'{self.ticker} Stock Price History & {len(predictions_df)}-Day Prediction',
                 ylabel='Price ($)',
                 figratio=(15, 7),
-                returnfig=True # Return fig and axes objects
+                returnfig=True, # Return fig and axes objects
+                savefig=savefig_args
             )
 
             # Plot predicted data points on the main price axes (ax[0])
@@ -332,13 +352,21 @@ class StockVisualizer:
             fig.tight_layout()
             mpf.show() # Use mpf.show() to display the plot
             logging.info("Candlestick plot displayed.")
+            if save_path:
+                logging.info(f"Candlestick plot saved to: {save_path}")
 
         except Exception as e:
-            logging.error(f"Error during mplfinance plotting: {e}")
+            logging.error(f"Error during mplfinance plotting/saving: {e}")
 
 
-    def plot_line_comparison(self, actual_data, predictions_df, history_points):
-        """Plots actual closing prices vs. predicted prices using Matplotlib."""
+    def plot_line_comparison(self, actual_data, predictions_df, history_points, save_path=None):
+        """Plots actual closing prices vs. predicted prices using Matplotlib.
+        Args:
+            actual_data (pd.DataFrame): DataFrame with historical data including 'Close'.
+            predictions_df (pd.DataFrame): DataFrame with 'Predicted Price' and dates.
+            history_points (int): Number of historical actual closing prices to plot.
+            save_path (str, optional): Full path to save the plot image (e.g., 'plot.png'). Defaults to None.
+        """
         if actual_data is None or predictions_df is None:
             logging.error("Cannot plot line comparison: Missing actual or prediction data.")
             return
@@ -367,6 +395,19 @@ class StockVisualizer:
         plt.legend()
         plt.grid(True)
         plt.tight_layout()
+
+        # Save the plot if save_path is provided
+        if save_path:
+            try:
+                # Ensure the directory exists (creates if not present)
+                save_dir = os.path.dirname(save_path)
+                if save_dir and not os.path.exists(save_dir):
+                    os.makedirs(save_dir)
+                    logging.info(f"Created directory for plot save: {save_dir}")
+                plt.savefig(save_path, dpi=300, bbox_inches='tight')
+                logging.info(f"Line comparison plot saved to: {save_path}")
+            except Exception as e:
+                logging.error(f"Error saving line comparison plot to {save_path}: {e}")
         plt.show()
         logging.info("Line comparison plot displayed.")
 
@@ -426,10 +467,25 @@ if __name__ == "__main__":
 
         visualizer = StockVisualizer(TICKER)
 
+        # Define save paths for plots
+        # Create a sub-directory for plots if it doesn't exist
+        plots_dir = os.path.join(os.getcwd(), 'stock_plots')
+        if not os.path.exists(plots_dir):
+            os.makedirs(plots_dir)
+            logging.info(f"Created directory for plot save: {plots_dir}")
+
+        candlestick_save_path = os.path.join(plots_dir, f"{TICKER}_CStick_{TODAY}.png")
+        line_comparison_save_path = os.path.join(plots_dir, f"{TICKER}_LineComp_{TODAY}.png")
         # Plot 1: Candlestick with Predictions
-        visualizer.plot_candlestick_with_predictions(original_data, predictions_df, window_size=120)
+        visualizer.plot_candlestick_with_predictions(original_data,
+                                                     predictions_df,
+                                                     window_size=120,
+                                                     save_path=candlestick_save_path)
 
         # Plot 2: Line comparison
-        visualizer.plot_line_comparison(original_data, predictions_df, history_points=SEQUENCE_LENGTH)
+        visualizer.plot_line_comparison(original_data,
+                                        predictions_df,
+                                        history_points=SEQUENCE_LENGTH,
+                                        save_path=line_comparison_save_path)
 
     logging.info("Script finished.")
