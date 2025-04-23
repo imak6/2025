@@ -1,4 +1,6 @@
 import os
+import sys
+import requests
 import tensorflow as tf
 import keras
 import yfinance as yf
@@ -15,6 +17,19 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
+# MLFlow
+import mlflow
+import mlflow.keras # MlFlow keras integration
+import mlflow.tensorflow # mlFlow tensorflow integration
+import json
+
+
+import subprocess
+import time
+import os
+import signal
+import atexit
+
 # Configuration
 TICKER = 'AAPL'
 START_DATE = '2022-01-01'
@@ -29,10 +44,43 @@ TRAIN_SPLIT_RATIO = 0.8
 EPOCHS = 50 # Reduced epochs for faster example, increase as needed (original was 200)
 BATCH_SIZE = 256 # Adjusted batch size
 
+# MLFlow configuration
+MLFLOW_EXPERIMENT_NAME = "Stock_Pred_LSTMAttention"
+MLFLOW_MODEL_NAME = "LSTM_Attention"
+MLFLOW_RUN_NAME = f"stock_pred_run_{TODAY}"
+
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info(f"Tensorflow version: {tf.__version__}")
 logging.info(f"Current Date: {TODAY}")
+
+def wait_for_mlflow_server(url="http://localhost:5001", timeout=30):
+    logging.info("Waiting for MLFlow server to be ready...")
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                logging.info("MLFlow server is up and running.")
+                return True
+        except requests.ConnectionError:
+            pass
+        time.sleep(1)
+    raise TimeoutError("MLFlow server did not start within expected time.")
+
+
+# Start MLflow server as subprocess
+mlflow_proc = subprocess.Popen([
+    "mlflow", "server",
+    "--backend-store-uri", "sqlite:///mlflow.db",
+    "--default-artifact-root", "./mlruns",
+    "--host", "127.0.0.1",
+    "--port", "5001"
+], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+# Wait a few seconds to let the server boot up
+wait_for_mlflow_server()
+
 
 # Utility function
 def flatten_multiindex_columns(df):
@@ -105,13 +153,6 @@ class StockDataHandler:
                 self.data[col] = pd.to_numeric(self.data[col], errors='coerce')
         self.data.dropna(subset=['Open', 'High', 'Low', 'Close', 'Volume'], inplace=True)
 
-        # try:
-        #     closing_prices = self.data['Close'].values.reshape(-1, 1)
-        #     self.scaled_data = self.scaler.fit_transform(closing_prices)
-        #     logging.info(f"Data scaled. Shape: {self.scaled_data.shape}")
-        # except Exception as e:
-        #     logging.error(f"Error preprocessing data: {e}")
-        #     raise
 
     def scale_data(self):
         """Scales the data using MinMaxScaler."""
@@ -147,18 +188,6 @@ class StockDataHandler:
 
     def get_last_sequence(self, sequence_length):
         """Gets the last sequence for prediction."""
-        # if self.scaled_data is None or len(self.scaled_data):
-        #     logging.error("Data not scaled. Cannot get last sequence. Call scale_data() first.")
-        #     # raise ValueError("Data not scaled. Cannot get last sequence. Call scale_data() first.")
-        #     return None
-        # logging.info(f"Getting last sequence with sequence length: {sequence_length}")
-        # last_sequence = self.scaled_data[-sequence_length:]
-        # if len(last_sequence) < sequence_length:
-        #     logging.error(f"Not enough data ({len(self.scaled_data)} points) to get last sequence of length {sequence_length}.")
-        #     # raise ValueError(f"Not enough data ({len(self.scaled_data)} points) to get last sequence of length {sequence_length}.")
-        #     return None
-        # logging.info(f"Last sequence retrieved. Shape: {last_sequence.shape}")
-        # return last_sequence.reshape(1, sequence_length, 1)
         if self.scaled_data is None or len(self.scaled_data) < sequence_length:
             logging.error("Not enough scaled data available for the last sequence.")
             return None
@@ -314,7 +343,7 @@ class StockVisualizer:
             return
 
         # Prepare savefig arguments for mplfinance if save_path is provided
-        savefig_args = None
+        savefig_kwarg = {}
         if save_path:
             # Ensure the directory exists (creates if not present)
             save_dir = os.path.dirname(save_path)
@@ -322,11 +351,11 @@ class StockVisualizer:
                 os.makedirs(save_dir)
                 logging.info(f"Created directory for plot save: {save_dir}")
 
-            savefig_args = dict(fname=save_path, dpi=300, pad_inches=0.25)
+            savefig_kwarg = dict(fname=save_path, dpi=300, pad_inches=0.25)
             logging.info(f"Plot will be saved to: {save_path}")
 
         try:
-            fig, ax = mpf.plot(
+            fig, axlist = mpf.plot(
                 plot_data.iloc[-window_size:], # Plot last 'window_size' days
                 type='candle',
                 style='yahoo',
@@ -335,28 +364,28 @@ class StockVisualizer:
                 ylabel='Price ($)',
                 figratio=(15, 7),
                 returnfig=True, # Return fig and axes objects
-                savefig=savefig_args
+                **savefig_kwarg
             )
 
             # Plot predicted data points on the main price axes (ax[0])
             if 'Predicted Price' in predictions_df.columns:
-                 ax[0].plot(predictions_df.index, predictions_df['Predicted Price'],
+                 axlist[0].plot(predictions_df.index, predictions_df['Predicted Price'],
                             linestyle='dashed', marker='o', markersize=5, color='red',
                             label=f'Predicted {len(predictions_df)} days')
-                 ax[0].legend() # Add legend to the price plot
+                 axlist[0].legend() # Add legend to the price plot
             else:
                 logging.warning(" 'Predicted Price' column not found in predictions_df for plotting.")
 
 
             # Adjust layout and display
             fig.tight_layout()
-            mpf.show() # Use mpf.show() to display the plot
-            logging.info("Candlestick plot displayed.")
-            if save_path:
-                logging.info(f"Candlestick plot saved to: {save_path}")
+            # mpf.show() # Use mpf.show() to display the plot
+            logging.info("Candlestick plot generated.")
+            return fig, axlist
 
         except Exception as e:
-            logging.error(f"Error during mplfinance plotting/saving: {e}")
+            logging.error(f"Error during mplfinance plotting/saving: {e}", exc_info=True)
+            return None, None
 
 
     def plot_line_comparison(self, actual_data, predictions_df, history_points, save_path=None):
@@ -378,114 +407,282 @@ class StockVisualizer:
             return
 
         logging.info("Plotting line comparison chart...")
-        plt.figure(figsize=(14, 7))
+        fig=plt.figure(figsize=(14, 7))
 
-        # Plot historical actual data (last 'history_points')
-        actual_plot_data = actual_data['Close'].iloc[-history_points:]
-        plt.plot(actual_plot_data.index, actual_plot_data.values,
-                 linestyle='-', marker='.', color='blue', label=f'Actual Data (Last {history_points} days)')
+        try:
+            # Plot historical actual data (last 'history_points')
+            actual_plot_data = actual_data['Close'].iloc[-history_points:]
+            plt.plot(actual_plot_data.index, actual_plot_data.values,
+                    linestyle='-', marker='.', color='blue', label=f'Actual Data (Last {history_points} days)')
 
-        # Plot predicted data
-        plt.plot(predictions_df.index, predictions_df['Predicted Price'],
-                 linestyle='-', marker='o', color='red', label=f'Predicted Data ({len(predictions_df)} days)')
+            # Plot predicted data
+            plt.plot(predictions_df.index, predictions_df['Predicted Price'],
+                    linestyle='-', marker='o', color='red', label=f'Predicted Data ({len(predictions_df)} days)')
 
-        plt.title(f"{self.ticker} Stock Price: Actual vs. Predicted")
-        plt.xlabel('Date')
-        plt.ylabel('Price ($)')
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
+            plt.title(f"{self.ticker} Stock Price: Actual vs. Predicted")
+            plt.xlabel('Date')
+            plt.ylabel('Price ($)')
+            plt.legend()
+            plt.grid(True)
+            plt.tight_layout()
 
-        # Save the plot if save_path is provided
-        if save_path:
+            # Save the plot if save_path is provided
+            if save_path:
+                try:
+                    # Ensure the directory exists (creates if not present)
+                    save_dir = os.path.dirname(save_path)
+                    if save_dir and not os.path.exists(save_dir):
+                        os.makedirs(save_dir)
+                        logging.info(f"Created directory for plot save: {save_dir}")
+                    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+                    logging.info(f"Line comparison plot saved to: {save_path}")
+                except Exception as e:
+                    logging.error(f"Error saving line comparison plot to {save_path}: {e}")
+            # plt.show()
+            logging.info("Line comparison plot displayed.")
+            return fig
+        except Exception as e:
+            logging.error(f"Error during line comparison plotting: {e}", exc_info=True)
+            plt.close(fig) # Close the figure to avoid resource leaks
+            return None
+
+def stop_mlflow_server_subprocess():
+    """Attempts to terminate the MLFlow server process using Popen methods."""
+    logging.debug("atexit: stop_mlflow_server_subprocess called.")
+
+    if 'mlflow_proc' not in globals() or not isinstance(mlflow_proc, subprocess.Popen):
+        logging.warning("atexit: mlflow_proc variable not found or not a valid Popen instance.")
+        return
+
+    pid = mlflow_proc.pid # Log PID for reference
+    if pid is None:
+        logging.warning("atexit: mlflow_proc has no PID.")
+        # Might already be terminated or in a strange state
+        return
+
+    logging.info(f"atexit: Checking status of MLFlow server process with PID: {pid}")
+
+    try:
+        if mlflow_proc.poll() is None: # Check if still running
+            logging.info(f"atexit: Process {pid} is running. Calling terminate().")
             try:
-                # Ensure the directory exists (creates if not present)
-                save_dir = os.path.dirname(save_path)
-                if save_dir and not os.path.exists(save_dir):
-                    os.makedirs(save_dir)
-                    logging.info(f"Created directory for plot save: {save_dir}")
-                plt.savefig(save_path, dpi=300, bbox_inches='tight')
-                logging.info(f"Line comparison plot saved to: {save_path}")
-            except Exception as e:
-                logging.error(f"Error saving line comparison plot to {save_path}: {e}")
-        plt.show()
-        logging.info("Line comparison plot displayed.")
+                mlflow_proc.terminate() # Send SIGTERM
+                # Wait for termination, poll() returns exit code if terminated
+                try:
+                    # Wait up to 2 seconds for graceful shutdown
+                    return_code = mlflow_proc.wait(timeout=2.0)
+                    logging.info(f"atexit: Process {pid} terminated successfully after terminate() (exit code: {return_code}).")
+                except subprocess.TimeoutExpired:
+                    # If terminate() didn't work quickly enough
+                    logging.warning(f"atexit: Process {pid} did not terminate after terminate() within timeout. Calling kill().")
+                    mlflow_proc.kill() # Send SIGKILL
+                    # Wait briefly after kill - kill should be faster
+                    return_code = mlflow_proc.wait(timeout=1.0)
+                    logging.info(f"atexit: Process {pid} terminated after kill() (exit code: {return_code}).")
+                except Exception as wait_err:
+                     # Catch potential errors during wait() itself
+                     logging.error(f"atexit: Error waiting for process {pid} after terminate/kill: {wait_err}", exc_info=True)
 
+            except Exception as sig_err:
+                 # Catch errors during terminate/kill calls (e.g., permissions)
+                 logging.error(f"atexit: Error sending signal to process {pid} via Popen methods: {sig_err}", exc_info=True)
+                 # As a last resort, try os.kill if Popen methods fail? Optional.
+                 try:
+                     os.kill(pid, signal.SIGKILL)
+                     logging.info(f"atexit: Sent SIGKILL via os.kill as fallback for process {pid}.")
+                 except Exception as fallback_err:
+                     logging.error(f"atexit: Fallback os.kill failed for {pid}: {fallback_err}")
+
+        else:
+            logging.info(f"atexit: Process {pid} was already stopped (exit code: {mlflow_proc.poll()}). No action needed.")
+    except Exception as outer_err:
+        # Catch any unexpected errors in the logic itself
+        logging.error(f"atexit: Unexpected error in stop_mlflow_server_subprocess for PID {pid}: {outer_err}", exc_info=True)
+
+# Register the new function with atexit
+atexit.register(stop_mlflow_server_subprocess)
 
 # --- Main Execution Logic ---
 if __name__ == "__main__":
-    # 1. Data Handling
-    data_handler = StockDataHandler(TICKER, START_DATE, END_DATE)
+
     try:
-        data_handler.load_data()
-        data_handler.preprocess_data()
-        data_handler.scale_data()
-        X, y = data_handler.create_sequences(SEQUENCE_LENGTH)
+        mlflow.set_tracking_uri("http://localhost:5001")
+        logging.info(f"Set MLFlow tracking URI to: {mlflow.get_tracking_uri()}")
     except Exception as e:
-        logging.error(f"Failed during data handling phase: {e}")
-        exit() # Exit if data preparation fails
+        logging.error(f"Failed to set MLFlow tracking URI. Error: {e}")
+        # raise RuntimeError("Descriptive message") # Exit if MLFlow URI setup fails
+        exit()
 
-    # 2. Data Splitting
-    if X is None or y is None:
-         logging.error("Sequence creation failed. Exiting.")
-         exit()
+    # Set experiment (create if it doesn't exist)
+    try:
+        mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
+        logging.info(f"Set MLFlow experiment to: {MLFLOW_EXPERIMENT_NAME}")
+    except Exception as e:
+        logging.error(f"Failed to set or create MLFlow experiment. Error: {e}")
+        # raise RuntimeError("Descriptive message") # Exit if experiment setup fails
+        exit()
+    # Start MLFlow Run
+    try:
+        with mlflow.start_run(run_name=MLFLOW_RUN_NAME) as run:
+            run_id = run.info.run_id
+            logging.info(f"MLFlow run started with name: {MLFLOW_RUN_NAME}, and Run ID: {run_id}")
+            logging.info(f"MLFlow tracking URI: {mlflow.get_tracking_uri()}") # Will show file path
+            logging.info(f"MLFlow artifact URI: {mlflow.get_artifact_uri()}") # Will show file path
 
-    train_size = int(len(X) * TRAIN_SPLIT_RATIO)
-    X_train, X_test = X[:train_size], X[train_size:]
-    y_train, y_test = y[:train_size], y[train_size:]
-    logging.info(f"Data split: X_train shape={X_train.shape}, X_test shape={X_test.shape}")
+            mlflow.log_params({
+                'ticker': TICKER,
+                'start_date': START_DATE,
+                'end_date': END_DATE,
+                'sequence_length': SEQUENCE_LENGTH,
+                'train_split_ratio': TRAIN_SPLIT_RATIO,
+                'epochs': EPOCHS,
+                'batch_size': BATCH_SIZE,
+                'prediction_days': PREDICTION_DAYS
+            })
+            # 1. Data Handling
+            data_handler = StockDataHandler(TICKER, START_DATE, END_DATE)
+            try:
+                data_handler.load_data()
+                data_handler.preprocess_data()
+                data_handler.scale_data()
+                X, y = data_handler.create_sequences(SEQUENCE_LENGTH)
+            except Exception as e:
+                logging.error(f"Failed during data handling phase: {e}")
+                # raise RuntimeError("Descriptive message") # Exit if data preparation fails
+                # sys.exit("Descriptive reason")
+                exit()
+            # 2. Data Splitting
+            if X is None or y is None:
+                logging.error("Sequence creation failed. Exiting.")
+                # raise RuntimeError("Descriptive message")
+                # sys.exit("Descriptive reason")
+                exit()
 
-    # 3. Model Training and Evaluation
-    lstm_model = LSTMAttentionModel(SEQUENCE_LENGTH)
-    lstm_model.build_model()
-    lstm_model.train(X_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
-    scaler = data_handler.get_scaler() # Get scaler for evaluation and prediction
-    lstm_model.evaluate(X_test, y_test, scaler)
+            train_size = int(len(X) * TRAIN_SPLIT_RATIO)
+            X_train, X_test = X[:train_size], X[train_size:]
+            y_train, y_test = y[:train_size], y[train_size:]
+            logging.info(f"Data split: X_train shape={X_train.shape}, X_test shape={X_test.shape}")
 
-    # 4. Prediction
-    last_sequence = data_handler.get_last_sequence(SEQUENCE_LENGTH)
-    predicted_prices = lstm_model.predict_future(last_sequence, scaler, PREDICTION_DAYS)
+            # 3. Model Training and Evaluation
+            lstm_model = LSTMAttentionModel(SEQUENCE_LENGTH)
+            lstm_model.build_model()
+            lstm_model.train(X_train, y_train, epochs=EPOCHS, batch_size=BATCH_SIZE)
+            scaler = data_handler.get_scaler() # Get scaler for evaluation and prediction
+            evaluation_metrics = lstm_model.evaluate(X_test, y_test, scaler)
 
-    # 5. Visualization
-    if predicted_prices is not None:
-        original_data = data_handler.get_original_data()
-        last_known_date = original_data.index[-1]
+            # Log metrics to MLFlow
+            if isinstance(evaluation_metrics, tuple):
+                evaluation_metrics = dict(zip(['mse', 'mae', 'mape'], evaluation_metrics))
+                mlflow.log_metrics(evaluation_metrics)
+                logging.info(f"Metrics logged to MLFlow: {evaluation_metrics}")
 
-        # Create prediction dates (ensure they are business days if needed)
-        prediction_dates = pd.date_range(
-            start=last_known_date + pd.offsets.BDay(1), # Start from next business day
-            periods=PREDICTION_DAYS,
-            freq=pd.offsets.BDay() # Ensure dates are business days
-        )
+            # signature_input_data = X_test[:5]
+            # signature_output_data = lstm_model.model.predict(signature_input_data)
+            # signature = mlflow.models.infer_signature(signature_input_data, signature_output_data)
+            # Save and log model
+            mlflow.tensorflow.log_model(model=lstm_model.model,
+                                        artifact_path="tf-model",
+                                        input_example=X_train[:1],
+                                        registered_model_name=MLFLOW_MODEL_NAME)
+            logging.info("Model saved to MLFlow.")
 
-        # Create predictions DataFrame
-        predictions_df = pd.DataFrame(
-            {'Predicted Price': predicted_prices.flatten()},
-            index=prediction_dates
-        )
-        logging.info(f"\nPredictions:\n{predictions_df}")
+            # 4. Prediction
+            last_sequence = data_handler.get_last_sequence(SEQUENCE_LENGTH)
+            predicted_prices = lstm_model.predict_future(last_sequence, scaler, PREDICTION_DAYS)
 
-        visualizer = StockVisualizer(TICKER)
+            # 5. Visualization
+            if predicted_prices is not None:
+                original_data = data_handler.get_original_data()
+                last_known_date = original_data.index[-1]
 
-        # Define save paths for plots
-        # Create a sub-directory for plots if it doesn't exist
-        plots_dir = os.path.join(os.getcwd(), 'stock_plots')
-        if not os.path.exists(plots_dir):
-            os.makedirs(plots_dir)
-            logging.info(f"Created directory for plot save: {plots_dir}")
+                # Create prediction dates (ensure they are business days if needed)
+                prediction_dates = pd.date_range(
+                    start=last_known_date + pd.offsets.BDay(1), # Start from next business day
+                    periods=PREDICTION_DAYS,
+                    freq=pd.offsets.BDay() # Ensure dates are business days
+                )
 
-        candlestick_save_path = os.path.join(plots_dir, f"{TICKER}_CStick_{TODAY}.png")
-        line_comparison_save_path = os.path.join(plots_dir, f"{TICKER}_LineComp_{TODAY}.png")
-        # Plot 1: Candlestick with Predictions
-        visualizer.plot_candlestick_with_predictions(original_data,
-                                                     predictions_df,
-                                                     window_size=120,
-                                                     save_path=candlestick_save_path)
+                # Create predictions DataFrame
+                predictions_df = pd.DataFrame(
+                    {'Predicted Price': predicted_prices.flatten()},
+                    index=prediction_dates
+                )
+                logging.info(f"\nPredictions:\n{predictions_df}")
 
-        # Plot 2: Line comparison
-        visualizer.plot_line_comparison(original_data,
-                                        predictions_df,
-                                        history_points=SEQUENCE_LENGTH,
-                                        save_path=line_comparison_save_path)
+                # Log predictions to MLFlow
+                predictions_csv_path = os.path.join(os.getcwd(), 'stock_predictions.csv')
+                predictions_df.to_csv(predictions_csv_path)
+                mlflow.log_artifact(predictions_csv_path, artifact_path="predictions")
+                logging.info(f"Predictions saved to MLFlow and CSV: {predictions_csv_path}")
+                os.remove(predictions_csv_path)
+                try:
+                    visualizer = StockVisualizer(TICKER)
+                    TODAY_STR = pd.Timestamp.now().strftime('%Y%m%d')
+                    original_data = data_handler.get_original_data()
 
-    logging.info("Script finished.")
+                    # Define save paths for plots
+                    # Create a sub-directory for plots if it doesn't exist
+                    # plots_dir = os.path.join(os.getcwd(), 'stock_plots')
+                    # if not os.path.exists(plots_dir):
+                    #     os.makedirs(plots_dir)
+                    #     logging.info(f"Created directory for plot save: {plots_dir}")
+
+                    # candlestick_save_path = os.path.join(plots_dir, f"{TICKER}_CStick_{TODAY}.png")
+                    # line_comparison_save_path = os.path.join(plots_dir, f"{TICKER}_LineComp_{TODAY}.png")
+
+                    # Log plots to MLflow
+                    logging.info("Generating candlestick plot for MLFlow...")
+                    fig_candlestick_obj, _ = visualizer.plot_candlestick_with_predictions(original_data,
+                                                                                    predictions_df,
+                                                                                    window_size=120,
+                                                                                    save_path=None) # type: ignore # Plot 1: Candlestick with Predictions
+                    if fig_candlestick_obj:
+                        logging.info("Logging cnaldestick plot figure to MLFlow...")
+                        mlflow.log_figure(fig_candlestick_obj, f"plots/{TICKER}_CS_{TODAY_STR}.png")
+                        plt.close(fig_candlestick_obj)
+                        logging.info("Candlestick plot logged to MLFlow.")
+                    else:
+                        logging.error("Failed to generate candlestick plot.")
+                    # Plot 1: Candlestick with Predictions
+                    # visualizer.plot_candlestick_with_predictions(original_data,
+                    #                                             predictions_df,
+                    #                                             window_size=120,
+                    #                                             save_path=candlestick_save_path)
+
+                    # Plot 2: Line comparison
+                    # visualizer.plot_line_comparison(original_data,
+                    #                                 predictions_df,
+                    #                                 history_points=SEQUENCE_LENGTH,
+                    #                                 save_path=line_comparison_save_path)
+                    logging.info("Generating line comparison plot...")
+                    fig_comparison_obj = visualizer.plot_line_comparison(original_data,
+                                                    predictions_df,
+                                                    history_points=SEQUENCE_LENGTH, save_path=None)
+                    if fig_comparison_obj:
+                        logging.info("Logging line comparison plot figure to MLFlow...")
+                        mlflow.log_figure(fig_comparison_obj, f"plots/{TICKER}_LC_{TODAY_STR}.png")
+                        plt.close(fig_comparison_obj)
+                        logging.info("Line comparison plot logged to MLFlow.")
+                    else:
+                        logging.warning("Failed to generate line comparison plot.")
+
+                except Exception as e:
+                    logging.error(f"Error during visualization: {e}")
+                    mlflow.set_tag("visualization_skipped", "true")
+            else:
+                logging.warning("Skipping visualization because predicted_prices is None.")
+                mlflow.set_tag("visualization_status", "logging_error")
+
+            # Register the model
+            model_uri = f"runs:/{run_id}/tf-model"
+            registered_model = mlflow.register_model(model_uri, MLFLOW_MODEL_NAME)
+            logging.info(f"Model registered with name: {registered_model.name}, Version={registered_model.version}")
+
+            logging.info(f"MLFlow Run ID {run_id} finished successfully.")
+            mlflow.end_run()
+
+    except Exception as e:
+        logging.error(f"An error occurred during MLFlow run: {e}")
+
+    stop_mlflow_server_subprocess()
+    logging.info("Script finished and mlflow server stopped successfully.")
