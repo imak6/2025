@@ -55,6 +55,37 @@
 - Finally, the main execution logic that
   calls all the necessary functions for building, training, testing the model and building the predictions.
 
+**Implemented MLFlow for version control of the ML model and to log the parameters, metrics, plots and the model to be able to use it for inference purposes**
+
+- Import necessary libraries to run mlflow
+  (mlflow, subprocess, atexit)
+
+- Configure the MLFlow (such as
+  experiment_name, model_name, run_name, tracking_uri etc.) to use it later in the code.
+
+- I have used **subprocess** to start MLFlow
+  server in the code where the ML model is being built, to avoid manually starting the MLFlow server.
+
+- Written a helper function that waits for the
+  MLFlow server to start on (<http://localhost:5001>).
+
+- Written a function to stop the mlflow using
+  atexit once the scripts is executed successfully.
+
+- In the main function, set the mlflow tracking
+  uri, experiment name (if not set already) and start a run using **with mlflow.start_run() as run:** where the data is being loaded, preprocessed, split for training and evaluation purposes.
+
+- In the same run, the model training,
+  evaluation are carried out and the related parameters, metrics, plots and even the trained model is being logged to mlflow.
+
+- The predicted prices are also stored/logged
+  as a csv file under mlflow artifacts, where plots, pickle files (saved model) are also stored.
+
+- The model is also registered and can be found
+  under the "Models" section. If the model name is unchanged whenever the code is run, multiple versions will be created under the same name. This is useful to draw comparisons and pick the best one.
+
+- Finally, call the stop mlflow server subprocess
+
 # ([Simple implementation of the attention mechanism from scratch][def])
 
 - how attention helped models like RNNs mitigate the vanishing gradient problem and capture long-range dependencies among words.
