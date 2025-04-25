@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Social Companion</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Chat with your AI Companion</h1>
+  <label class="theme-switch">
+    <input type="checkbox" id="theme-toggle">
+    <span class="slider"></span> 🌗
+  </label>
+  <div id="chat-box"></div>
+  <button id="scroll-btn" onclick="scrollToBottom()">⬇️</button>
+
+  <!-- Typing Indicator-->
+  <div id="typing-indicator" style="display:none;" class="typing-indicator">
+        Bot is typing...
+  </div>
+
+  <input type="text" id="user-input" placeholder="Type your message..." />
+  <select id="voiceSelect"></select> <!-- dropdown for voice/language-->
+  <button onclick="sendMessage()">Send</button>
+  <button onclick="startListening()">🎙️ Speak</button>
+  <button onclick="clearChat()">🗑️ Clear Chat</button>
+  <span class="message-tools">
+    📝 <span onclick="editMessage(this)">Edit</span> |
+    ❌ <span onclick="deleteMessage(this)">Delete</span>
+  </span>
+  <script>
+    let selectedVoice = null;
+    let selectedLang = 'en-us';
+
+    function editMessage(element) {
+        const messageDiv = element.closest('.message-content');
+        messageDiv.setAttribute('contenteditable', true);
+        messageDiv.focus();
+    }
+
+    function deleteMessage(element) {
+        const message = element.closest('.chat-message');
+        message.remove();
+        saveChatToLocalStorage();
+    }
+
+    function populateVoiceList() {
+        const voices = speechSynthesis.getVoices();
+        if (!voices.length) return setTimeout(populateVoiceList, 100); // Retry until voices are available
+
+        const select = document.getElementById("voiceSelect");
+        select.innerHTML = "";
+
+        voices.forEach((voice, index) => {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = `${voice.name} (${voice.lang})`;
+            if (voice.lang.startsWith("en")) option.selected = true;
+            select.appendChild(option);
+        });
+
+        select.onchange = () => {
+            const voiceIndex = parseInt(select.value);
+            selectedVoice = voices[voiceIndex];
+            selectedLang = selectedVoice.lang;
+        };
+
+
+        selectedVoice = voices[0];
+        selectedLang = voices[0].lang;
+    }
+
+    SpeechSynthesis.onvoiceschanged = populateVoiceList;
+
+    function clearChat() {
+        localStorage.removeItem("chatHistory");
+        document.getElementById("chat-box").innerHTML = "";
+    }
+
+    function scrollToBottom() {
+        const chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function saveChatToLocalStorage() {
+        const chatBox = document.getElementById("chat-box");
+        localStorage.setItem("chatHistory", chatBox.innerHTML);
+    }
+
+    function loadChatFromLocalStorage() {
+        const saved = localStorage.getItem("chatHistory");
+        if (saved) {
+            document.getElementById("chat-box").innerHTML = saved;
+            scrollToBottom();
+        }
+    }
+
+    function getCurrentTimestamp() {
+        const now = new Date();
+        return now.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+    }
+
+    async function sendMessage() {
+      const inputField = document.getElementById("user-input");
+      const userMessage = inputField.value;
+      const chatBox = document.getElementById("chat-box");
+      const typingIndicator = document.getElementById("typing-indicator");
+
+      if (!userMessage) return;
+
+      // Show user message in a bubble
+      chatBox.innerHTML +=
+        `<div class="chat-message user-message">
+            <img src="/static/user-avatar.png" class="avatar">
+            <div class="message-content" contenteditable="true">
+              ${userMessage}
+              <div class="timestamp">${getCurrentTimestamp()}</div>
+            </div>
+         </div>`;
+         scrollToBottom(); // Scroll after user message
+         saveChatToLocalStorage();
+
+      inputField.value = "";
+      // Show typing indicator
+      typingIndicator.style.display = "block";
+      try {
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: userMessage })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        // Add bot response
+        chatBox.innerHTML += `
+        <div class="chat-message bot-message">
+          <img src="/static/bot-avatar.png" class="avatar">
+          <div class="message-content" contenteditable="true">
+          <div class="message-content">
+            ${data.reply}
+            <div class="timestamp">${getCurrentTimestamp()}</div>
+          </div>
+        </div>`
+
+        // SpeechSynthesis API to speak the bot's reply out loud
+        const utterance = new SpeechSynthesisUtterance(data.reply);
+        utterance.lang = selectedLang; // global variable
+        utterance.voice = selectedVoice; // global variable
+        speechSynthesis.speak(utterance);
+
+        scrollToBottom(); // Scroll after bot reply
+        saveChatToLocalStorage();
+            } catch (error) {
+          chatBox.innerHTML += `<div class="chat-message error-message">⚠️ Error: ${error.message}</div>`;
+      } finally {
+          typingIndicator.style.display = "none"; // always hide it
+      }
+
+      // Hide typing indicator
+      // typingIndicator.style.display = "none";
+    }
+    // Voice input
+    function startListening() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-us';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById("user-input").value = transcript;
+            sendMessage();
+        };
+
+        recognition.onerror = function(event) {
+            alert("Speech recognition error: " + event.error);
+        };
+
+        recognition.start();
+    }
+
+    // scroll to bottom visibility
+    const scrollBtn = document.getElementById("scroll-btn");
+    const chatBox = document.getElementById("chat-box");
+
+    chatBox.addEventListener("scroll", () => {
+        const nearBottom = chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 20;
+        scrollBtn.style.display = nearBottom ? "none" : "block";
+    });
+
+    // Theme toggle
+    document.getElementById("theme-toggle").addEventListener("change", () => {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+    });
+
+    // Restore theme on load
+    window.onload = function() {
+        populateVoiceList();
+        loadChatFromLocalStorage();
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark-mode");
+            document.getElementById("theme-toggle").checked = true;
+        }
+    };
+  </script>
+</body>
+</html>
