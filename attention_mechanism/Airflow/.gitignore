@@ -1,2 +1,3 @@
-/logs/scheduler/2025-04-22/native_dags/example_dags/
 /mlruns
+/logs/
+/dags/__pycache__
