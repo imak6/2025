@@ -79,11 +79,30 @@ python app.py
 
 Visit <http://127.0.0.1:5000/>
 
-Next Steps (Planned Features)
-🎙️ Voice input/output
+## Feature: Chat History (per session)
 
-🎭 Personality customization
+### Step1
 
-🌙 Chat UI enhancements (dark mode, editable messages, transitions)
+Use Flask's "session" to store chat history temporarily.
 
-🧠 Memory & history per user
+1. Enable session management.
+2. Store user/AI messages as a list in the session.
+
+3. Display Chat history in the UI (update index.html and add styling in .css)
+
+### Persist chat history beyond session memory
+
+Use SQLite ot JSON files and then  implement actual LLM memory (context window/summaries).
+
+### Next Steps (Planned Features)
+
+1. 🎙️ Voice Support (input/output - TTS+STT)
+
+2. 🎭 Personality customization
+
+3. 🌙 Chat UI enhancements (dark mode,
+   editable messages, transitions)
+
+4. 🧠 Memory & history per user
+
+5. Language support toggle
