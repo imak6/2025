@@ -10,7 +10,11 @@
     <input type="checkbox" id="theme-toggle">
     <span class="slider"></span> 🌗
   </label>
-  <div id="chat-box"></div>
+  <div id="chat-box">
+    {% for message in chat_history %}
+      <div class="{{message.role}}">{{message.content}}</div>
+    {%endfor%}
+  </div>
   <button id="scroll-btn" onclick="scrollToBottom()">⬇️</button>
 
   <!-- Typing Indicator-->

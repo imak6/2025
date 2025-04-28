@@ -1,0 +1,12 @@
+/venv
+/app/__pycache__
+/ai-docs/.docusaurus
+/ai-docs/blog
+/ai-docs/docs/tutorial-basics
+/ai-docs/docs/tutorial-extras
+/ai-docs/node_modules
+/ai-docs/docusaurus.config.js
+/ai-docs/package*.json
+/ai-docs/src
+/ai-docs/static
+/ai-docs/README.md

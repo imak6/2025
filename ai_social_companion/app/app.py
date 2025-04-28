@@ -1,15 +1,21 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 from chatbot import get_bot_response
 import subprocess
 import json
 import requests
+from flask_cors import CORS
+import uuid
 
 app = Flask(__name__)
+CORS(app)
+app.secret_key = 'mysupersecretkey'
 
 @app.route("/")
-def home():
+def index():
     #return "Hello, Welcome to your AI Social Companion!"
-    return render_template("index.html")
+    if 'chat_history' not in session:
+        session['chat_history'] = []
+    return render_template("index.html", chat_history=session['chat_history'])
 
 def query_local_model(prompt):
     url = "http://localhost:11434/api/generate"
@@ -41,13 +47,25 @@ def query_local_model(prompt):
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    user_input = request.json.get("message")
+    user_input = request.json.get("message", '')
     if not user_input:
         return jsonify({"response": "Please send a valid message."})
+    # Add user input to chat history
+    session['chat_history'].append({"role": "user", "content": user_input})
+    session.modified = True # make sure Flask knows session has changed
 
     bot_response = query_local_model(user_input)
+
+    # Add bot response to chat history
+    session['chat_history'].append({"role": "assistant", "content": bot_response})
+    session.modified = True
+    print(f"Current chat history: {session['chat_history']}")
     return jsonify({"reply": bot_response})
 
+@app.route('/clear')
+def clear_chat():
+    session.pop('chat_history', None)
+    return 'Chat history cleared.', 200
 
 if __name__ == "__main__":
     app.run(debug=True)
