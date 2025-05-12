@@ -1,0 +1,31 @@
+# Core
+streamlit
+pandas
+numpy
+
+# LangChain ecosystem
+langchain
+langchain-ollama
+langchain-community
+ollama
+openai # optional for testing non-local models
+
+# Profiling & EDA
+pandas-profiling
+seaborn
+matplotlib
+scipy
+
+# File support
+pyarrow
+openpyxl
+
+# Optional for better logs & error tracking
+tqdm
+rich
+
+# For Parquet/Arrow
+fastparquet
+
+# For excel
+xlrd
