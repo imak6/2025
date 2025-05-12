@@ -141,7 +141,10 @@ docker push username/data-analysis-agent:latest
 
 step6: Run from the repository (Optional)
 From any machine with docker installed:
-**docker pull username/data-analysis-agent:latest** - pull the image pushed to docker hub
+```
+docker pull username/data-analysis-agent:latest
+```
+- pull the image pushed to docker hub
 
 **docker run -p 8501:8501 username/data-analysis-agent:latest** - run the app/container
 
