@@ -79,7 +79,7 @@ DATA_ANALYSIS_AGENT/
 Install using pip:
 
 ```
-**pip install langchain-community pandas openai pandas-profiling seaborn matplotlib streamlit**
+pip install langchain-community pandas openai pandas-profiling seaborn matplotlib streamlit
 ```
 
 Local LLM (via Ollama)
@@ -88,9 +88,10 @@ macos: brew install ollama
 others: <https://ollama.com>
 
 Download and run a local model (e.g: Mistral, gemma:2b, qwen2.5)
+```
 "brew services start ollama"
 "ollama run gemma:2b"
-
+```
 ## Steps that get executed
 
 - Define the LangChain agent pipeline using a local LLM via Ollama.
@@ -112,23 +113,31 @@ This script will:
 ## DOCKER INSTRUCTIONS TO HOST THE STREAMLIT APP
 
 step1: Build docker image using the dockerfile
-
-- **docker build -f docker/app.dockerfile -t data-anaysis-agent .**
+```
+docker build -f docker/app.dockerfile -t data-anaysis-agent .
+```  
 
 step2: Run the Container (streamlit app)
-**docker run -p 8501:8501 data-agent-app**
-
+```
+docker run -p 8501:8501 data-agent-app
+```
+```
 visit <http://localhost:8501>
-
+```
 step3: Push the created docker image to a repository (dockerhub/github container registry)
-
-**docker tag data-analysis-agent username/data-analysis-agent:latest**
+```
+docker tag data-analysis-agent username/data-analysis-agent:latest
+```
 
 step4: login to docker hub
-**docker login**
+```
+docker login
+```
 
 step5: Push the image
-**docker push username/data-analysis-agent:latest**
+```
+docker push username/data-analysis-agent:latest
+```
 
 step6: Run from the repository (Optional)
 From any machine with docker installed:
