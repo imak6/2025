@@ -134,3 +134,19 @@ From any machine with docker installed:
 **docker pull username/data-analysis-agent:latest** - pull the image pushed to docker hub
 
 **docker run -p 8501:8501 username/data-analysis-agent:latest** - run the app/container
+
+## Deployment with GitHub Actions
+
+1. Setup Github Actions - check **.github/workflows/docker-deploy.yml** file.
+
+2. Add Guthub Secrets
+
+```
+Github repo -> Settings -> Secrets -> Actions and Add:
+- DOCKER_USERNAME
+- DOCKER_PASSWORD
+```
+
+3. Push to main
+
+- Once pushed to main branch, the image will be automatically built and pushed to docker hub.
