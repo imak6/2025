@@ -78,7 +78,8 @@ DATA_ANALYSIS_AGENT/
 
 Install using pip:
 
-``` pip install langchain-community pandas openai pandas-profiling seaborn matplotlib streamlit
+```
+**pip install langchain-community pandas openai pandas-profiling seaborn matplotlib streamlit**
 ```
 
 Local LLM (via Ollama)
